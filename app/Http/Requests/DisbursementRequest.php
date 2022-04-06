@@ -11,10 +11,10 @@ class DisbursementRequest extends FormRequest
      *
      * @return bool
      */
-    public function authorize()
-    {
-        return false;
-    }
+    // public function authorize()
+    // {
+    //     return true;
+    // }
 
     /**
      * Get the validation rules that apply to the request.
@@ -24,7 +24,12 @@ class DisbursementRequest extends FormRequest
     public function rules()
     {
         return [
-            //
+            "external_id" => "required|max:1000",       
+            "bank_code" => "required|digits_between:7,17",       
+            "account_holder_name" => "required",       
+            "account_number" => "required",       
+            "description" => "required",       
+            "amount" => "required|numeric|digits_between:1,10",       
         ];
     }
 }

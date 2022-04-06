@@ -36,7 +36,7 @@ trait ApiResponse {
         return response()->json($response, $httpCode);
     }
 
-    public function http401($message= null , $errorCode= "0501", $httpCode = 401)
+    public function http401($message= null , $errorCode= "0401", $httpCode = 401)
     {
         if($message == null ){
             $message = "Unauthorized";
