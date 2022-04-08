@@ -18,11 +18,11 @@ class CreateLogEntriesTable extends Migration
             $table->integer('duration');
             $table->string('url');
             $table->string('request_method');
-            $table->json('request_body');
-            $table->json('request_header');
+            $table->string('request_body');
+            $table->string('request_header');
             $table->string('ip');
             $table->integer('status_code');
-            $table->json('response_body');
+            $table->string('response_body');
             $table->timestamps();
         });
     }
