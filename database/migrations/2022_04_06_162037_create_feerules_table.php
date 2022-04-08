@@ -18,6 +18,7 @@ class CreateFeerulesTable extends Migration
             $table->string('feeruleId', 100)->nullable();
             $table->string('name', 100);
             $table->text('description');
+            $table->string('routes', 255);
             $table->string('metadata', 100)->nullable();
             $table->timestamps();
         });

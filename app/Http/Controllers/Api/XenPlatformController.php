@@ -8,6 +8,8 @@ use Illuminate\Support\Facades\Validator;
 use Xendit\Xendit;
 use App\Traits\ApiResponse;
 use App\Models\Xenplatform;
+use App\Models\Transfer;
+use App\Models\Feerule;
 // use App\Http\Requests\XenplatformRequest;
 // use App\Http\Requests\TransferRequest;
 // use App\Http\Requests\FeeruleRequest;
@@ -66,7 +68,25 @@ class XenPlatformController extends Controller
     public function transfer(Request $request)
     {
         try {
+            $validator = Validator::make($request->all(), [
+                "reference" => "required",
+                "amount" => "required|numeric",
+                "source_user_id" => "required",
+                "destination_user_id" => "required",
+            ]);
+            if ($validator->fails()) {
+                return response()->json("Validation Failed", 422);
+            }
             $response = \Xendit\Platform::createTransfer($request->all());
+            $transfer = new Transfer();
+            $transfer->transfer_id = $response->transfer_id;
+            $transfer->reference = $request->reference;
+            $transfer->source_user_id = $request->source_user_id;
+            $transfer->destination_user_id = $request->destination_user_id;
+            $transfer->amount = $request->amount;
+            $transfer->status = $response->status;
+            $transfer->save();
+
             return $this->httpSuccess($response);
         } catch (\Exception $e) {
             return $this->httpError($e->getMessage(), $e->getCode());
@@ -77,7 +97,27 @@ class XenPlatformController extends Controller
     public function feeRule(Request $request)
     {
         try {
+            $validator = Validator::make($request->all(), [
+                "name" => "required",
+                "description" => "required|numeric",
+                "Feerule.*.unit" => "required",
+                "Feerule.*.amount" => "required",
+                "Feerule.*.currency" => "required",
+            ]);
+            if ($validator->fails()) {
+                return response()->json("Validation Failed", 422);
+            }
+
             $response = \Xendit\Platform::createFeeRule($request->all());
+
+            $feerule = new Feerule();
+            $feerule->feeruleId = $response->id;
+            $feerule->name = $request->name;
+            $feerule->description = $request->description;
+            $feerule->routes = json_encode($request->routes);
+            $feerule->metadata = json_encode($request->metadata);
+            $feerule->save();
+
             return $this->httpSuccess($response);
         } catch (\Exception $e) {
             return $this->httpError($e->getMessage(), $e->getCode());
@@ -98,11 +138,11 @@ class XenPlatformController extends Controller
     {
         try{
         $updateDisbursement  = Xenplatform::where('email', $request->data["email"])->update([
-            "id"=>$request->data["id"], 
+            "id"=>$request->data["id"],
             "country" => $request->data["country"],
             "status" => $request->data["status"],
         ]);
-        return $this->httpSuccess($request);
+        return $this->httpSuccess($request->all());
         } catch(\Exception $e){
             return $this->httpError($e->getMessage(), $e->getCode());
         }

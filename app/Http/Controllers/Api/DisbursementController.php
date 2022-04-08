@@ -42,11 +42,11 @@ class DisbursementController extends Controller
         try {
             // $validated = $request->validated();
             $validator = Validator::make($request->all(), [
-                "external_id" => "required|max:1000",       
-                "bank_code" => "required|digits_between:7,17",       
-                "account_holder_name" => "required",       
-                "account_number" => "required",       
-                "description" => "required",       
+                "external_id" => "required|max:1000",
+                "bank_code" => "required|digits_between:7,17",
+                "account_holder_name" => "required",
+                "account_number" => "required",
+                "description" => "required",
                 "amount" => "required|numeric|digits_between:1,10",
             ]);
             if ($validator->fails()) {
@@ -64,11 +64,11 @@ class DisbursementController extends Controller
     {
         try{
         $updateDisbursement  = Disbursement::where('external_id', $request->external_id)->update([
-            "status"=>$request->status, 
+            "status"=>$request->status,
             "failure_code" => $request->failure_code,
             "is_instant" => $request->is_instant,
         ]);
-        return $this->httpSuccess($request);
+        return $this->httpSuccess($request->all());
         } catch(\Exception $e){
             return $this->httpError($e->getMessage(), $e->getCode());
         }
