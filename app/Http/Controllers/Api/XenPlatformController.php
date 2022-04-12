@@ -137,6 +137,9 @@ class XenPlatformController extends Controller
     public function notification(Request $request)
     {
         try{
+            if(count($request->all()) == 0){
+                return $this->httpError("data not found");
+            }
         $updateDisbursement  = Xenplatform::where('email', $request->data["email"])->update([
             "id"=>$request->data["id"],
             "country" => $request->data["country"],

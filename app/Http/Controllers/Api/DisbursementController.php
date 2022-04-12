@@ -8,7 +8,6 @@ use Illuminate\Support\Facades\Validator;
 use Xendit\Xendit;
 use App\Traits\ApiResponse;
 use App\Models\Disbursement;
-// use App\Http\Requests\DisbursementRequest;
 
 class DisbursementController extends Controller
 {
@@ -63,12 +62,15 @@ class DisbursementController extends Controller
     public function notification(Request $request)
     {
         try{
-        $updateDisbursement  = Disbursement::where('external_id', $request->external_id)->update([
-            "status"=>$request->status,
-            "failure_code" => $request->failure_code,
-            "is_instant" => $request->is_instant,
-        ]);
-        return $this->httpSuccess($request->all());
+            if(count($request->all()) == 0){
+                return $this->httpError("data not found");
+            }
+            $updateDisbursement  = Disbursement::where('external_id', $request->external_id)->update([
+                "status"=>$request->status,
+                "failure_code" => $request->failure_code,
+                "is_instant" => $request->is_instant,
+            ]);
+            return $this->httpSuccess($request->all());
         } catch(\Exception $e){
             return $this->httpError($e->getMessage(), $e->getCode());
         }

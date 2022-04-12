@@ -64,7 +64,8 @@ class Kernel extends HttpKernel
         'throttle' => \Illuminate\Routing\Middleware\ThrottleRequests::class,
         'verified' => \Illuminate\Auth\Middleware\EnsureEmailIsVerified::class,
         'paidbaq.auth.basic' => \App\Http\Middleware\WithBasicAuth::class,
-        'request_logger' => \App\Http\Middleware\RequestLoggerMiddleware::class
+        'request_logger' => \App\Http\Middleware\RequestLoggerMiddleware::class,
+        'VerifyXenditCallback' => \App\Http\Middleware\VerifyXenditCallback::class
     ];
 
     /**

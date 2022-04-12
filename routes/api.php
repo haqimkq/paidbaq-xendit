@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Http\Request;
+use Symfony\Component\Routing\Route;
 
 /*
 |--------------------------------------------------------------------------
@@ -16,9 +17,11 @@ use Illuminate\Http\Request;
 Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
 });
+Route::middleware(['VerifyXenditCallback'])->group(function () {
 
-Route::post("/disbursement/notification","Api\\DisbursementController@notification")->name('disbursement.notification');
-Route::post("/account/notification","Api\\XenPlatformController@notification")->name('xenplatform.notification');
+    Route::post("/disbursement/notification","Api\\DisbursementController@notification")->name('disbursement.notification');
+    Route::post("/account/notification","Api\\XenPlatformController@notification")->name('xenplatform.notification');
+});
 
 Route::group(["prefix" => "disbursement", "middleware" => ["paidbaq.auth.basic"]],function(){
     Route::get("/{id}","Api\\DisbursementController@getById")->name('disbursement.index');
