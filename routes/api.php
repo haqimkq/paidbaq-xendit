@@ -16,7 +16,7 @@ use Illuminate\Http\Request;
 Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
 });
-Route::middleware(['VerifyXenditCallback'])->group(function () {
+Route::middleware(['verifyXenditCallback'])->group(function () {
 
     Route::post("/disbursement/notification","Api\\DisbursementController@notification")->name('disbursement.notification');
     Route::post("/account/notification","Api\\XenPlatformController@notification")->name('xenplatform.notification');
