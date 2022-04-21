@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Helpers\ArrayHelper;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
@@ -35,24 +36,39 @@ class DisbursementController extends Controller
             return $this->httpError($e->getMessage(), $e->getCode());
         }
     }
+    
 
     public function createAccount(Request $request)
     {
+        $inputs = $request->only([
+            "X-IDEMPOTENCY-KEY", 
+            "for-user-id", 
+            "external_id", 
+            "amount", 
+            "bank_code", 
+            "account_holder_name", 
+            "account_number", 
+            "description"
+        ]);
+        $modelData = ArrayHelper::toDashKey( array_change_key_case($inputs) );
+        
         try {
-            // $validated = $request->validated();
+            
             $validator = Validator::make($request->all(), [
                 "external_id" => "required|max:1000",
-                "bank_code" => "required|digits_between:7,17",
+                "bank_code" => "required",
                 "account_holder_name" => "required",
                 "account_number" => "required",
                 "description" => "required",
                 "amount" => "required|numeric|digits_between:1,10",
             ]);
+
             if ($validator->fails()) {
                 return response()->json("Validation Failed", 422);
             }
-            $disbursement = Disbursement::create($request->all);
-            $response = \Xendit\Disbursements::create($request->all());
+
+            Disbursement::create($modelData);
+            $response = \Xendit\Disbursements::create($inputs);
             return $this->httpSuccess($response);
         } catch (\Exception $e) {
             return $this->httpError($e->getMessage(), $e->getCode());
