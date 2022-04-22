@@ -124,10 +124,12 @@ class XenPlatformController extends Controller
         }
     }
 
-    public function getBalance($type){
+    public function getBalance(Request $request, $type){
         try {
             // balance types: CASH, TAX, HOLDING";
-            $response = \Xendit\Balance::getBalance($type);
+            $params = $request->only(["for-user-id"]);
+            // $response = \Xendit\Disbursements::retrieve($id, $params);
+            $response = \Xendit\Balance::getBalance($type, $params);
             return $this->httpSuccess($response);
         } catch (\Exception $e) {
             return $this->httpError($e->getMessage(), $e->getCode());
