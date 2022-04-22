@@ -27,11 +27,31 @@ class DisbursementController extends Controller
         }
     }
 
-    public function getByExternalID($externalId)
+    public function getByExternalID(Request $request, $externalId)
     {
         try {
-            $response = \Xendit\Disbursements::retrieveExternal($externalId);
+            $params = $request->only(["for-user-id"]);
+            $response = \Xendit\Disbursements::retrieveExternal($externalId, $params);
             return $this->httpSuccess($response);
+        } catch (\Exception $e) {
+            return $this->httpError($e->getMessage(), $e->getCode());
+        }
+    }
+
+    public function getById(Request $request, $id)
+    {
+       
+        try {
+            
+            $params = $request->only(["for-user-id"]);
+            $response = \Xendit\Disbursements::retrieve($id, $params);
+            if($response) {
+                Disbursement::where("disbursementId", $id)->update([
+                    "status" => $response["status"],
+                ]);
+            }
+            return $this->httpSuccess($response);
+
         } catch (\Exception $e) {
             return $this->httpError($e->getMessage(), $e->getCode());
         }
@@ -64,11 +84,19 @@ class DisbursementController extends Controller
             ]);
 
             if ($validator->fails()) {
-                return response()->json("Validation Failed", 422);
+                
+                $errors = $validator->errors();
+                $message = implode(", ", $errors->all());
+                return $this->httpUnprocessableEntity($message);
             }
 
-            Disbursement::create($modelData);
+            $disbursement = Disbursement::create($modelData);
             $response = \Xendit\Disbursements::create($inputs);
+            if($response) {
+                $disbursement->update([
+                    "disbursementId" => $response["id"],
+                ]);
+            }
             return $this->httpSuccess($response);
         } catch (\Exception $e) {
             return $this->httpError($e->getMessage(), $e->getCode());

@@ -29,6 +29,16 @@ trait ApiResponse {
 
     }
 
+    public function httpUnprocessableEntity($parameterName = null, $errroCode = "0422", $httpCode = 422)
+    {
+
+       
+        $response["error_code"] = $errroCode;
+        $response["error_message"] = "Bad Request. ".$parameterName;
+        return response()->json($response, $httpCode);
+
+    }
+
     public function httpError($message= null , $errorCode= "0500", $httpCode = 500)
     {
         $response["error_code"] = $errorCode;
