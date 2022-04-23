@@ -44,6 +44,7 @@ Route::group(["prefix" => "virtual-account", "middleware" => ["paidbaq.auth.basi
     Route::post("/","Api\\VirtualAccountController@create")->name('va.index');
     Route::patch("/{id}","Api\\VirtualAccountController@update")->name('va.unpdate');
     Route::get("/{id}/info","Api\\VirtualAccountController@getVirtualAccount")->name('va.info');
+    Route::post("simulate/{extId}","Api\\VirtualAccountController@simulatePayment")->name('va.simulate-payment');
    
 });
 

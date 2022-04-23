@@ -73,12 +73,10 @@ class VirtualAccountController extends Controller
     public function update(Request $request, $id) 
     {
         $request->only(["external_id", "bank_code", "name" , "is_closed" ,"expected_amount", "description"]);
-        // print_r($request->all());
         try{
 
             $response = \Xendit\VirtualAccounts::update($id, $request->all());
-            print_r($response);
-            // die;
+            return $this->httpSuccess($response);
         } catch (\Exception $e) {
             print_r($e->getMessage());
         }
@@ -91,10 +89,9 @@ class VirtualAccountController extends Controller
         try{
 
             $response = \Xendit\VirtualAccounts::getFVAPayment($id);
-            print_r($response);
-            // die;
+            return $this->httpSuccess($response);
         } catch (\Exception $e) {
-            print_r($e->getMessage());
+            return $this->httpError($e->getMessage(), $e->getCode());
         }
 
     }
@@ -110,9 +107,24 @@ class VirtualAccountController extends Controller
             //     "failure_code" => $request->failure_code,
             //     "is_instant" => $request->is_instant,
             // ]);
+            Log::info(json_encode($request->all()));
             return $this->httpSuccess($request->all());
         } catch(\Exception $e){
             return $this->httpError($e->getMessage(), $e->getCode());
         }
+    }
+
+    public function simulatePayment(Request $request, $extID)
+    {
+        $ch = curl_init();
+
+        curl_setopt($ch, CURLOPT_URL,"http://www.example.com/tester.phtml");
+        curl_setopt($ch, CURLOPT_POST, 1);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, "postvar1=value1&postvar2=value2&postvar3=value3" );
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        $server_output = curl_exec($ch);
+
+        curl_close ($ch);
+
     }
 }
