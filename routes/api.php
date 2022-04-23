@@ -17,9 +17,9 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
 });
 Route::middleware(['verifyXenditCallback'])->group(function () {
-
     Route::post("/disbursement/notification","Api\\DisbursementController@notification")->name('disbursement.notification');
     Route::post("/account/notification","Api\\XenPlatformController@notification")->name('xenplatform.notification');
+    Route::post("/virtual-account/notification","Api\\VirtualAccountController@notification")->name('va.notification');
 });
 
 Route::group(["prefix" => "disbursement", "middleware" => ["paidbaq.auth.basic"]],function(){
@@ -38,5 +38,12 @@ Route::group(["prefix" => "account", "middleware" => ["paidbaq.auth.basic"]],fun
 Route::group(["prefix" => "transaction", "middleware" => ["paidbaq.auth.basic"]],function(){
     Route::get("/","Api\\TransactionController@index")->name('transaction.index');
     Route::get("/{id}","Api\\TransactionController@detail")->name('transaction.detail');
+});
+
+Route::group(["prefix" => "virtual-account", "middleware" => ["paidbaq.auth.basic"]],function(){
+    Route::post("/","Api\\VirtualAccountController@create")->name('va.index');
+    Route::patch("/{id}","Api\\VirtualAccountController@update")->name('va.unpdate');
+    Route::get("/{id}/info","Api\\VirtualAccountController@getVirtualAccount")->name('va.info');
+   
 });
 
