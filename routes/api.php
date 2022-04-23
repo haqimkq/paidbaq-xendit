@@ -20,6 +20,7 @@ Route::middleware(['verifyXenditCallback'])->group(function () {
     Route::post("/disbursement/notification","Api\\DisbursementController@notification")->name('disbursement.notification');
     Route::post("/account/notification","Api\\XenPlatformController@notification")->name('xenplatform.notification');
     Route::post("/virtual-account/notification","Api\\VirtualAccountController@notification")->name('va.notification');
+    Route::post("/virtual-account/created/notification","Api\\VirtualAccountController@createdNotification")->name('va.notification.created');
 });
 
 Route::group(["prefix" => "disbursement", "middleware" => ["paidbaq.auth.basic"]],function(){

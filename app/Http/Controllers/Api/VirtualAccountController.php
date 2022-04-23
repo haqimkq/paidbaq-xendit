@@ -99,15 +99,17 @@ class VirtualAccountController extends Controller
     public function notification(Request $request)
     {
         try{
-            // if(count($request->all()) == 0){
-            //     return $this->httpError("data not found");
-            // }
-            // $updateDisbursement  = Disbursement::where('external_id', $request->external_id)->update([
-            //     "status"=>$request->status,
-            //     "failure_code" => $request->failure_code,
-            //     "is_instant" => $request->is_instant,
-            // ]);
-            Log::info(json_encode($request->all()));
+            Log::info("VA Payment Callback ------- ".json_encode($request->all()));
+            return $this->httpSuccess($request->all());
+        } catch(\Exception $e){
+            return $this->httpError($e->getMessage(), $e->getCode());
+        }
+    }
+
+    public function createdNotification(Request $request)
+    {
+        try{
+            Log::info("Created Callback ------- ".json_encode($request->all()));
             return $this->httpSuccess($request->all());
         } catch(\Exception $e){
             return $this->httpError($e->getMessage(), $e->getCode());
