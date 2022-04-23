@@ -88,7 +88,7 @@ class VirtualAccountController extends Controller
         
         try{
 
-            $response = \Xendit\VirtualAccounts::getFVAPayment($id);
+            $response = \Xendit\VirtualAccounts::retrieve($id);
             return $this->httpSuccess($response);
         } catch (\Exception $e) {
             return $this->httpError($e->getMessage(), $e->getCode());
@@ -100,6 +100,7 @@ class VirtualAccountController extends Controller
     {
         try{
             Log::info("VA Payment Callback ------- ".json_encode($request->all()));
+            $notify = \Xendit\VirtualAccounts::getFVAPayment($request->id);
             return $this->httpSuccess($request->all());
         } catch(\Exception $e){
             return $this->httpError($e->getMessage(), $e->getCode());
