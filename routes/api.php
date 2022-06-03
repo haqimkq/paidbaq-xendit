@@ -19,6 +19,7 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 Route::middleware(['verifyXenditCallback'])->group(function () {
     Route::post("/disbursement/notification","Api\\DisbursementController@notification")->name('disbursement.notification');
     Route::post("/account/notification","Api\\XenPlatformController@notification")->name('xenplatform.notification');
+    Route::post("/account/notification/suspension","Api\\XenPlatformController@suspensionNotification")->name('xenplatform.notification.suspension');
     Route::post("/virtual-account/notification","Api\\VirtualAccountController@notification")->name('va.notification');
     Route::post("/virtual-account/created/notification","Api\\VirtualAccountController@createdNotification")->name('va.notification.created');
 });
@@ -46,6 +47,7 @@ Route::group(["prefix" => "virtual-account", "middleware" => ["paidbaq.auth.basi
     Route::patch("/{id}","Api\\VirtualAccountController@update")->name('va.unpdate');
     Route::get("/{id}/info","Api\\VirtualAccountController@getVirtualAccount")->name('va.info');
     Route::post("simulate/{extId}","Api\\VirtualAccountController@simulatePayment")->name('va.simulate-payment');
+    Route::get("{id}/confirm-payment-notification","Api\\VirtualAccountController@getVirtualAccountPayment")->name('va.simulate-paymentcc');
    
 });
 
