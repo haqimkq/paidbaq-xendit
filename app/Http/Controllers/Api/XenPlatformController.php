@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Jobs\AccountCreatedNotificationJob;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Xendit\Xendit;
@@ -10,6 +11,8 @@ use App\Traits\ApiResponse;
 use App\Models\Xenplatform;
 use App\Models\Transfer;
 use App\Models\Feerule;
+use Illuminate\Support\Facades\Log;
+
 // use App\Http\Requests\XenplatformRequest;
 // use App\Http\Requests\TransferRequest;
 // use App\Http\Requests\FeeruleRequest;
@@ -40,15 +43,14 @@ class XenPlatformController extends Controller
             if ($validator->fails()) {
                 return response()->json("Validation Failed", 422);
             }
-            // print_r($request->business_profile["business_name"]);die;
-            // $xenplatform = Xenplatform::create($request->all());
+            
+            $response = \Xendit\Platform::createAccount($request->all());
             $xenplatform = new Xenplatform();
             $xenplatform->email = $request->email;
             $xenplatform->type = $request->type;
             $xenplatform->business_name = $request->public_profile["business_name"];
+            $xenplatform->accountID = $response["id"];
             $xenplatform->save();
-
-            $response = \Xendit\Platform::createAccount($request->all());
             return $this->httpSuccess($response);
         } catch (\Exception $e) {
             return $this->httpError($e->getMessage(), $e->getCode());
@@ -57,7 +59,9 @@ class XenPlatformController extends Controller
 
     public function updateAccount(Request $request, $account_id)
     {
+    
         try {
+            
             $response = \Xendit\Platform::updateAccount($account_id,$request->all());
             return $this->httpSuccess($response);
         } catch (\Exception $e) {
@@ -138,16 +142,42 @@ class XenPlatformController extends Controller
 
     public function notification(Request $request)
     {
+        Log::info("Receive account notification : ".json_encode($request->all()));
         try{
             if(count($request->all()) == 0){
                 return $this->httpError("data not found");
             }
-        $updateDisbursement  = Xenplatform::where('email', $request->data["email"])->update([
-            "id"=>$request->data["id"],
-            "country" => $request->data["country"],
-            "status" => $request->data["status"],
-        ]);
-        return $this->httpSuccess($request->all());
+            $updateDisbursement  = Xenplatform::where('accountID', $request->data["id"])->update([
+                "accountID"=>$request->data["id"],
+                "email"=>$request->data["email"],
+                "country" => $request->data["country"],
+                "status" => $request->data["status"],
+            ]);
+            
+            AccountCreatedNotificationJob::dispatch( $request->all())
+                ->onQueue("clientnotification");
+            return $this->httpSuccess($request->all());
+        } catch(\Exception $e){
+            return $this->httpError($e->getMessage(), $e->getCode());
+        }
+    }
+
+    public function suspensionNotification(Request $request)
+    {
+        try{
+            if(count($request->all()) == 0){
+                return $this->httpError("data not found");
+            }
+            $updateDisbursement  = Xenplatform::where('accountID', $request->data["id"])->update([
+                "accountID"=>$request->data["id"],
+                "email"=>$request->data["email"],
+                "country" => $request->data["country"],
+                "status" => $request->data["status"],
+            ]);
+            
+            AccountCreatedNotificationJob::dispatch( $request->all())
+                ->onQueue("clientnotification");
+            return $this->httpSuccess($request->all());
         } catch(\Exception $e){
             return $this->httpError($e->getMessage(), $e->getCode());
         }
