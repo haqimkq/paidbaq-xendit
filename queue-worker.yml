@@ -1,0 +1,14 @@
+apps:
+  - name: xendit-queue
+    script: artisan
+    exec_mode: fork
+    interpreter: php
+    instances: 1
+    restart_delay: 3000
+    error_file: ./storage/logs/queue.error.log
+    out_file: ./storage/logs/queue.out.log
+    pid_file: ./storage/app/brick_queue.pid 
+    args:
+      - queue:work
+      - --sleep=1
+      - --queue=clientnotification
