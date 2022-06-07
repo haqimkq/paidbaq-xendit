@@ -117,6 +117,7 @@ class DisbursementController extends Controller
                 "is_instant" => $request->is_instant,
             ]);
             $requestBody["request_id"] = $request->external_id;
+            $requestBody["notification_message"] = true;
             if($request->status == "COMPLETED") {
                 $requestBody["status"] = "Transferred";
             } else if($request->status == "FAILED"){
