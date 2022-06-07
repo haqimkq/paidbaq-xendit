@@ -37,7 +37,7 @@ class DisbursementNotificationJob implements ShouldQueue
                 ->addHeader(["X-XEN-NOTIFICATION-KEY" => env("BACK_OS_XEN_NOTIFICATION_KEY")])
                 ->setBody($this->body)
                 ->makeRequest("POST", env("BACK_OS_DISBURSEMENT_NOTIFICATION_URL"));
-            Log::info(["abcdefgh",$paibaqClient->getResponseClient()]);
+            Log::info(["response Client",$paibaqClient->getResponseClient()]);
         } catch(\Exception $e){
             Log::info($e->getMessage());
         }

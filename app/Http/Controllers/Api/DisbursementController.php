@@ -116,12 +116,11 @@ class DisbursementController extends Controller
                 "failure_code" => $request->failure_code,
                 "is_instant" => $request->is_instant,
             ]);
-            $requestBody["request_id"] = $updateDisbursement->id;
+            $requestBody["request_id"] = $request->external_id;
             if($request->status == "COMPLETED") {
                 $requestBody["status"] = "Transferred";
             } else if($request->status == "FAILED"){
                 $requestBody["status"] = "Rejected";
-
             }
             DisbursementNotificationJob::dispatch( $requestBody )
                 ->onQueue("clientnotification");
