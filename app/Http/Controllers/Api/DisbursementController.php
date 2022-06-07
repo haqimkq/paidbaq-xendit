@@ -4,11 +4,13 @@ namespace App\Http\Controllers\Api;
 
 use App\Helpers\ArrayHelper;
 use App\Http\Controllers\Controller;
+use App\Jobs\DisbursementNotificationJob;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Xendit\Xendit;
 use App\Traits\ApiResponse;
 use App\Models\Disbursement;
+use App\Services\PaibaqClient;
 
 class DisbursementController extends Controller
 {
@@ -114,6 +116,14 @@ class DisbursementController extends Controller
                 "failure_code" => $request->failure_code,
                 "is_instant" => $request->is_instant,
             ]);
+            $requestBody["request_id"] = $request->external_id;
+            if($request->status == "COMPLETED") {
+                $requestBody["status"] = "Transferred";
+            } else if($request->status == "FAILED"){
+                $requestBody["status"] = "Rejected";
+            }
+            DisbursementNotificationJob::dispatch( $requestBody )
+                ->onQueue("clientnotification");
             return $this->httpSuccess($request->all());
         } catch(\Exception $e){
             return $this->httpError($e->getMessage(), $e->getCode());
