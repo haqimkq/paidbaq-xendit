@@ -53,12 +53,13 @@ class VirtualAccountController extends Controller
                 $message = implode(", ", $errors->all());
                 return $this->httpUnprocessableEntity($message);
             }
-            $expiredAt = Carbon::now()->addHours(2)->format("c");
+            $expiredAt = Carbon::now()->setTimezone('Asia/Jakarta')->addHours(2)->format("c");
             Log::info($expiredAt);
             $request->merge(["expiration_date" => $expiredAt]);
+            Log::info(__CLASS__." create VA  Data will sent to xendit ".json_encode($request->all()));
             $va = VirtualAccount::create($request->all());
             $response = \Xendit\VirtualAccounts::create($request->all());
-            Log::info($response);
+            Log::info(__CLASS__." Result create VA from xendit ".json_encode($response));
             if($response) {
                 $va->update([
                     "transaction_id" => $response["id"],
@@ -76,11 +77,14 @@ class VirtualAccountController extends Controller
     }
     public function update(Request $request, $id) 
     {
+        $expiredAt = Carbon::now()->setTimezone('Asia/Jakarta')->addHours(2)->format("c");
+        if($request->with_expiration_date) {
+            $expiredAt = $request->with_expiration_date;
+        }
         $request->only(["external_id", "bank_code", "name" , "is_closed" ,"expected_amount", "description"]);
-        $expiredAt = Carbon::now()->addHours(2)->format("c");
         $request->merge(["expiration_date" => $expiredAt]);
         try{
-
+            Log::info(__CLASS__." Update active va ".json_encode($request->all()));
             $response = \Xendit\VirtualAccounts::update($id, $request->all());
             return $this->httpSuccess($response);
         } catch (\Exception $e) {
