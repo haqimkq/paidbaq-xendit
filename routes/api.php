@@ -20,12 +20,17 @@ Route::middleware(['verifyXenditCallback'])->group(function () {
 
     Route::post("/disbursement/notification","Api\\DisbursementController@notification")->name('disbursement.notification');
     Route::post("/account/notification","Api\\XenPlatformController@notification")->name('xenplatform.notification');
+    Route::post("/batch-disbursement/notification","Api\\BatchDisbursementController@notification");
 });
 
 Route::group(["prefix" => "disbursement", "middleware" => ["paidbaq.auth.basic"]],function(){
     Route::get("/{id}","Api\\DisbursementController@getById")->name('disbursement.index');
     Route::get("/external/{externalId}","Api\\DisbursementController@getByExternalID")->name('disbursement.externalId');
     Route::post("/create","Api\\DisbursementController@createAccount")->name('disbursement.createAccount');
+});
+Route::group(["prefix" => "batch-disbursement", "as"=> "batch.disbursement", "middleware" => ["paidbaq.auth.basic"]],function(){
+
+    Route::post("/create","Api\\BatchDisbursementController@create")->name('create');
 });
 Route::group(["prefix" => "account", "middleware" => ["paidbaq.auth.basic"]],function(){
     Route::get("/{account_id}","Api\\XenPlatformController@index")->name('xenplatform.index');
