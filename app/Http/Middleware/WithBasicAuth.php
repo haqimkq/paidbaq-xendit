@@ -25,7 +25,6 @@ class WithBasicAuth
             "status" => "active",
             "environment" => $environment,
         ])->first();
-
         $is_not_authenticated = (!$has_supplied_credentials || !$apiClientModel);
         if($is_not_authenticated){
             return \response()->json([
