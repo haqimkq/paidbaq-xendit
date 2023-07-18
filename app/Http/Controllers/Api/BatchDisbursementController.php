@@ -77,22 +77,42 @@ class BatchDisbursementController extends Controller
                     "description" => Arr::get($item, "description", null),
                     "email_to" => Arr::get($item, "email_to", null),
                     "status" => Arr::get($item, "status", null),
-                    "valid_name" => Arr::get($disbursement, "valid_name", null),
-                    "bank_reference" => Arr::get($item, "bank_reference", null)
+                    "valid_name" => Arr::get($item, "valid_name", null),
+                    "bank_reference" => Arr::get($item, "bank_reference", null),
+                    "created_at" => date("Y-m-d H:i:s")
                 ];
             }, $disbursement);
-
-            (new BatchUpdate())
+            $disbursementCallbackDataId = array_column($disbursement, "id");
+            $callbackItemExist = BatchDisbursementCallbackData::whereIn("id", $disbursementCallbackDataId)->get()->toArray();
+            $callbackItemExistId = array_column($callbackItemExist, "id");
+            $disbursementChunked = array_chunk($disbursement, 200);
+            $disbursementUpdate = [];
+            foreach($disbursementChunked as $itemEx) {
+                foreach($itemEx as $idx => $itemDsb) {
+                    $itemId = Arr::get($itemDsb, "id", null);
+                    if(in_array($itemId, $callbackItemExistId)) {
+                        $disbursementUpdate[] = $itemDsb;
+                        unset($disbursement[$idx]);
+                    }
+                     
+                }
+            }
+            
+            if($disbursementUpdate) {
+                (new BatchUpdate())
                     ->chunk(1)
                     ->model( 
                         new BatchDisbursementCallbackData(),  
-                        $disbursement ,
+                        $disbursementUpdate ,
                         ["id", "batch_disbursement_callback_id"]
                     );
+            }
+            if($disbursement) BatchDisbursementCallbackData::insert($disbursement);
             DB::commit();
         } catch (\Exception $e) {
-            echo $e->getMessage();
+            Log::debug($e->getMessage());
+            return response()->json(["error_code" => "500", "error_message" => "terjadi kesalahan"], 500);
         }
-        // Log::debug(serialize($request->all()));
+        Log::debug(serialize($request->all()));
     }
 }
