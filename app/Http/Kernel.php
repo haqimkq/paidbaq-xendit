@@ -65,7 +65,8 @@ class Kernel extends HttpKernel
         'verified' => \Illuminate\Auth\Middleware\EnsureEmailIsVerified::class,
         'paidbaq.auth.basic' => \App\Http\Middleware\WithBasicAuth::class,
         'request_logger' => \App\Http\Middleware\RequestLoggerMiddleware::class,
-        'verifyXenditCallback' => \App\Http\Middleware\VerifyXenditCallback::class
+        'verifyXenditCallback' => \App\Http\Middleware\VerifyXenditCallback::class,
+        'batch.disbursement' => \App\Http\Middleware\BatchDisbursementMiddleware::class,
     ];
 
     /**
