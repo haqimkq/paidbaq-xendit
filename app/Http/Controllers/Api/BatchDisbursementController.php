@@ -8,6 +8,7 @@ use App\Factory\Disbursement\XenDisbursement;
 use App\Factory\Model\BatchUpdate;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\BatchDisbursementStoreRequest;
+use App\Jobs\BatchDisbursementNotificationJob;
 use App\Models\BatchDisbursementCallback;
 use App\Models\BatchDisbursementCallbackData;
 use App\Traits\ApiResponse;
@@ -107,7 +108,12 @@ class BatchDisbursementController extends Controller
                         ["id", "batch_disbursement_callback_id"]
                     );
             }
+            
+            BatchDisbursementNotificationJob::dispatch( $request->all() )
+                ->onQueue("clientnotification");
             if($disbursement) BatchDisbursementCallbackData::insert($disbursement);
+
+            
             DB::commit();
         } catch (\Exception $e) {
             Log::debug($e->getMessage());
