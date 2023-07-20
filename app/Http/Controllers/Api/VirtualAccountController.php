@@ -139,7 +139,7 @@ class VirtualAccountController extends Controller
             "virtual_account_id" => $request->id
         ]);
 
-        $params = $request->except(["id"]);
+        $params = $request->except(["id", "payment_detail", "sender_name"]);
 
         try{
             # Store request to database
