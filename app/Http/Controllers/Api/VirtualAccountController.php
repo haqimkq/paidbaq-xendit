@@ -34,6 +34,7 @@ class VirtualAccountController extends Controller
             "expected_amount", 
             "virtual_account_number", 
             "description", 
+            "expiration_date"
         ]);
         
        
@@ -53,9 +54,9 @@ class VirtualAccountController extends Controller
                 $message = implode(", ", $errors->all());
                 return $this->httpUnprocessableEntity($message);
             }
-            $expiredAt = Carbon::now()->setTimezone('Asia/Jakarta')->addHours(2)->format("c");
-            Log::info($expiredAt);
-            $request->merge(["expiration_date" => $expiredAt]);
+            // $expiredAt = Carbon::now()->setTimezone('Asia/Jakarta')->addHours(2)->format("c");
+            // Log::info($expiredAt);
+            // $request->merge(["expiration_date" => $expiredAt]);
             Log::info(__CLASS__." create VA  Data will sent to xendit ".json_encode($request->all()));
             $va = VirtualAccount::create($request->all());
             $response = \Xendit\VirtualAccounts::create($request->all());
@@ -139,7 +140,7 @@ class VirtualAccountController extends Controller
             "virtual_account_id" => $request->id
         ]);
 
-        $params = $request->except(["id"]);
+        $params = $request->except(["id", "payment_detail", "sender_name"]);
 
         try{
             # Store request to database
