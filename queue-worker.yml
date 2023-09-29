@@ -11,4 +11,4 @@ apps:
     args:
       - queue:work
       - --sleep=1
-      - --queue=xendisbursement
+      - --queue=clientnotification
