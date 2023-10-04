@@ -78,7 +78,7 @@ class VirtualAccountController extends Controller
     }
     public function update(Request $request, $id) 
     {
-        $expiredAt = Carbon::now()->setTimezone('Asia/Jakarta')->addHours(2)->format("c");
+        $expiredAt = Carbon::now()->setTimezone('Asia/Jakarta')->addHours(24)->format("c");
         if($request->with_expiration_date) {
             $expiredAt = $request->with_expiration_date;
         }
