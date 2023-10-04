@@ -110,7 +110,7 @@ class BatchDisbursementController extends Controller
             }
             
             BatchDisbursementNotificationJob::dispatch( $request->all() )
-                ->onQueue("clientnotification");
+                ->onQueue("xendisbursement");
             if($disbursement) BatchDisbursementCallbackData::insert($disbursement);
 
             

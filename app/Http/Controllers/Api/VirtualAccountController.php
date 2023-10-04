@@ -148,7 +148,7 @@ class VirtualAccountController extends Controller
 
             # dispatching notification job to Backos 
             VirtualAccountNotificationJob::dispatch( $request->except(["virtual_account_id"]))
-                ->onQueue("clientnotification");
+                ->onQueue("xendisbursement");
 
             return $this->httpSuccess($request->all());
         } catch(\Exception $e){
@@ -162,7 +162,7 @@ class VirtualAccountController extends Controller
 
             Log::info("Created Callback ------- ".json_encode($request->all()));
             VirtualAccountCreatedNotificationJob::dispatch( $request->all())
-                ->onQueue("clientnotification");
+                ->onQueue("xendisbursement");
 
             return $this->httpSuccess($request->all());
         } catch(\Exception $e){

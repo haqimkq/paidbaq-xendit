@@ -155,7 +155,7 @@ class XenPlatformController extends Controller
             ]);
             
             AccountCreatedNotificationJob::dispatch( $request->all())
-                ->onQueue("clientnotification");
+                ->onQueue("xendisbursement");
             return $this->httpSuccess($request->all());
         } catch(\Exception $e){
             return $this->httpError($e->getMessage(), $e->getCode());
@@ -176,7 +176,7 @@ class XenPlatformController extends Controller
             ]);
             
             AccountCreatedNotificationJob::dispatch( $request->all())
-                ->onQueue("clientnotification");
+                ->onQueue("xendisbursement");
             return $this->httpSuccess($request->all());
         } catch(\Exception $e){
             return $this->httpError($e->getMessage(), $e->getCode());
