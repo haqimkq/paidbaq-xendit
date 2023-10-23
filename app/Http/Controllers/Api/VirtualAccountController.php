@@ -88,7 +88,7 @@ class VirtualAccountController extends Controller
             Log::info(__CLASS__." Update active va ".json_encode($request->all()));
             $response = \Xendit\VirtualAccounts::update($id, $request->all());
             return $this->httpSuccess($response);
-        } catch (\Exception $e) {
+        } catch (\Xendit\Exceptions\ApiException $e) {
             return $this->httpError($e->getMessage(), $e->getCode());
         }
 

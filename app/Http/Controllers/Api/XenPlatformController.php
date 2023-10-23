@@ -11,6 +11,7 @@ use App\Traits\ApiResponse;
 use App\Models\Xenplatform;
 use App\Models\Transfer;
 use App\Models\Feerule;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Log;
 
 // use App\Http\Requests\XenplatformRequest;
@@ -83,12 +84,12 @@ class XenPlatformController extends Controller
             }
             $response = \Xendit\Platform::createTransfer($request->all());
             $transfer = new Transfer();
-            $transfer->transfer_id = $response->transfer_id;
-            $transfer->reference = $request->reference;
-            $transfer->source_user_id = $request->source_user_id;
-            $transfer->destination_user_id = $request->destination_user_id;
-            $transfer->amount = $request->amount;
-            $transfer->status = $response->status;
+            $transfer->transfer_id = Arr::get($response, "transfer_id", NULL);
+            $transfer->reference = Arr::get($response, "reference", NULL);
+            $transfer->source_user_id = Arr::get($response, "source_user_id", NULL);
+            $transfer->destination_user_id = Arr::get($response, "destination_user_id", NULL);
+            $transfer->amount = Arr::get($response, "amount", 0);
+            $transfer->status = Arr::get($response, "status", NULL);
             $transfer->save();
 
             return $this->httpSuccess($response);
