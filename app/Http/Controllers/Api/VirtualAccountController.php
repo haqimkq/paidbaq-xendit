@@ -78,7 +78,7 @@ class VirtualAccountController extends Controller
     }
     public function update(Request $request, $id) 
     {
-        $expiredAt = Carbon::now()->setTimezone('Asia/Jakarta')->addHours(2)->format("c");
+        $expiredAt = Carbon::now()->setTimezone('Asia/Jakarta')->addHours(24)->format("c");
         if($request->with_expiration_date) {
             $expiredAt = $request->with_expiration_date;
         }
@@ -88,7 +88,7 @@ class VirtualAccountController extends Controller
             Log::info(__CLASS__." Update active va ".json_encode($request->all()));
             $response = \Xendit\VirtualAccounts::update($id, $request->all());
             return $this->httpSuccess($response);
-        } catch (\Exception $e) {
+        } catch (\Xendit\Exceptions\ApiException $e) {
             return $this->httpError($e->getMessage(), $e->getCode());
         }
 
@@ -148,7 +148,7 @@ class VirtualAccountController extends Controller
 
             # dispatching notification job to Backos 
             VirtualAccountNotificationJob::dispatch( $request->except(["virtual_account_id"]))
-                ->onQueue("clientnotification");
+                ->onQueue("xendisbursement");
 
             return $this->httpSuccess($request->all());
         } catch(\Exception $e){
@@ -162,7 +162,7 @@ class VirtualAccountController extends Controller
 
             Log::info("Created Callback ------- ".json_encode($request->all()));
             VirtualAccountCreatedNotificationJob::dispatch( $request->all())
-                ->onQueue("clientnotification");
+                ->onQueue("xendisbursement");
 
             return $this->httpSuccess($request->all());
         } catch(\Exception $e){
