@@ -124,7 +124,7 @@ class DisbursementController extends Controller
                 $requestBody["status"] = "Rejected";
             }
             DisbursementNotificationJob::dispatch( $requestBody )
-                ->onQueue("clientnotification");
+                ->onQueue("xendisbursement");
             return $this->httpSuccess($request->all());
         } catch(\Exception $e){
             return $this->httpError($e->getMessage(), $e->getCode());
